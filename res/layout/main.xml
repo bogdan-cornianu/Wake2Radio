@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+>
+    <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" android:layout_alignParentTop="true"
+            android:layout_alignParentLeft="true">
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Time for Alarm:"
+                android:id="@+id/timePickerTxtView"
+                android:layout_alignParentTop="true" android:layout_alignParentLeft="true"/>
+        <TimePicker
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/timePicker"
+                android:layout_below="@+id/timePickerTxtView" android:layout_alignParentLeft="true"/>
+        <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/radioUrlTxt"
+                android:layout_below="@+id/radioUrlTxtView" android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"/>
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Set Alarm"
+                android:id="@+id/setAlarmBtn"
+                android:layout_below="@+id/radioUrlTxt" android:layout_centerHorizontal="true"/>
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Radio URL:"
+                android:id="@+id/radioUrlTxtView"
+                android:layout_centerVertical="true" android:layout_alignParentLeft="true"/>
+        <CheckBox
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Repeat everyday"
+                android:id="@+id/repeatAlarmChk"
+                android:layout_below="@+id/timePicker" android:layout_alignParentLeft="true"/>
+    </RelativeLayout>
+</RelativeLayout>
+

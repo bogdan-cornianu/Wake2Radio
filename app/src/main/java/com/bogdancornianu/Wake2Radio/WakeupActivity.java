@@ -43,7 +43,7 @@ public class WakeupActivity extends Activity implements MediaPlayer.OnPreparedLi
             }
         });
 
-        SharedPreferences settings = getSharedPreferences("Wake2RadioPrefs", Context.MODE_PRIVATE);
+        SharedPreferences settings = getApplicationContext().getSharedPreferences("Wake2RadioPrefs", Context.MODE_PRIVATE);
         radioUrl = settings.getString("streamUrl", "Stream not found.");
         radioUrlTxt = (TextView) findViewById(R.id.textView2);
 

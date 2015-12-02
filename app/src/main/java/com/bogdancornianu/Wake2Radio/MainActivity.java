@@ -14,6 +14,8 @@ import android.widget.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
 
 public class MainActivity extends Activity {
     private TimePicker timePicker;
@@ -82,8 +84,8 @@ public class MainActivity extends Activity {
     }
 
     private void setNextAlarm(long nextAlarmTime, boolean repeating) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE HH:mm");
-        SimpleDateFormat simpleDateFormatRepeating = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE HH:mm", Locale.US);
+        SimpleDateFormat simpleDateFormatRepeating = new SimpleDateFormat("EEE HH:mm", Locale.US);
         String alarmText = repeating ? NEXT_ALARM_TEXT + "Everyday " + simpleDateFormatRepeating.format(nextAlarmTime) : NEXT_ALARM_TEXT + simpleDateFormat.format(nextAlarmTime);
 
         nextAlarmTxt.setText(alarmText);
@@ -92,11 +94,10 @@ public class MainActivity extends Activity {
     }
 
     private void saveSetting(String key, String value) {
-        SharedPreferences settings = getSharedPreferences("Wake2RadioPrefs", Context.MODE_PRIVATE);
+        SharedPreferences settings = getApplicationContext().getSharedPreferences("Wake2RadioPrefs", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = settings.edit();
 
-        editor.putString(key, value);
-        editor.apply();
+        editor.putString(key, value).apply();
     }
 
     private boolean isAlarmBeforeCurrentTime() {
@@ -114,20 +115,19 @@ public class MainActivity extends Activity {
     }
 
     private void loadSettings() throws ParseException {
-        SharedPreferences settings = getSharedPreferences("Wake2RadioPrefs", Context.MODE_PRIVATE);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE HH:mm");
-        SimpleDateFormat simpleDateFormatRepeating = new SimpleDateFormat("HH:mm");
+        SharedPreferences settings = getApplicationContext().getSharedPreferences("Wake2RadioPrefs", Context.MODE_PRIVATE);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE HH:mm", Locale.US);
+        SimpleDateFormat simpleDateFormatRepeating = new SimpleDateFormat("EEE HH:mm", Locale.US);
         Boolean repeating = Boolean.parseBoolean(settings.getString("repeatEveryday", "false"));
         String nextAlarm = settings.getString("nextAlarm", "");
-        long timeNow = System.currentTimeMillis();
-        long nextAlarmTime = repeating ? simpleDateFormatRepeating.parse(nextAlarm).getTime() : simpleDateFormat.parse(nextAlarm).getTime();
+        Date nextAlarmTime = repeating ? simpleDateFormatRepeating.parse(nextAlarm) : simpleDateFormat.parse(nextAlarm);
 
         timePicker.setCurrentHour(Integer.parseInt(settings.getString("alarmHour", "1")));
         timePicker.setCurrentMinute(Integer.parseInt(settings.getString("alarmMinute", "1")));
         repeatEveryday.setChecked(repeating);
         radioUrl.setText(settings.getString("streamUrl", ""));
 
-        if (nextAlarmTime < timeNow) {
+        if (Calendar.getInstance().after(nextAlarmTime)) {
             nextAlarmTxt.setText(NEXT_ALARM_TEXT + "No alarm set.");
         } else {
             nextAlarmTxt.setText(NEXT_ALARM_TEXT + nextAlarm);

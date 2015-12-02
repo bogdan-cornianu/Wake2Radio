@@ -1,0 +1,45 @@
+[
+    {
+        "outputFile": "C:\\Users\\Bogdan\\StudioProjects\\Wake2Radio\\app\\build\\intermediates\\res\\merged\\debug\\values\\values.xml",
+        "map": [
+            {
+                "to": {
+                    "startLine": 2,
+                    "startColumn": 4,
+                    "startOffset": 55,
+                    "endColumn": 47,
+                    "endOffset": 98
+                },
+                "from": {
+                    "file": "C:\\Users\\Bogdan\\StudioProjects\\Wake2Radio\\app\\src\\main\\res\\values\\strings.xml",
+                    "position": {
+                        "startLine": 2,
+                        "startColumn": 4,
+                        "startOffset": 57,
+                        "endColumn": 47,
+                        "endOffset": 100
+                    }
+                }
+            },
+            {
+                "to": {
+                    "startLine": 3,
+                    "startColumn": 4,
+                    "startOffset": 103,
+                    "endColumn": 67,
+                    "endOffset": 166
+                },
+                "from": {
+                    "file": "C:\\Users\\Bogdan\\StudioProjects\\Wake2Radio\\app\\src\\main\\res\\values\\styles.xml",
+                    "position": {
+                        "startLine": 2,
+                        "startColumn": 4,
+                        "startOffset": 57,
+                        "endColumn": 74,
+                        "endOffset": 127
+                    }
+                }
+            }
+        ]
+    }
+]

@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.Button;
@@ -16,6 +18,7 @@ import java.io.IOException;
 
 public class WakeupActivity extends Activity implements MediaPlayer.OnPreparedListener, MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnErrorListener {
     private MediaPlayer player;
+    private MediaPlayer ringtonePlayer;
     private ProgressBar bufferBar;
     private String radioUrl = "";
     private TextView radioUrlTxt;
@@ -50,11 +53,24 @@ public class WakeupActivity extends Activity implements MediaPlayer.OnPreparedLi
         bufferBar = (ProgressBar) findViewById(R.id.progressBar);
 
         initializeMediaPlayer();
-        startPlaying();
+    }
+
+    @Override
+    public void onDestroy() {
+        stopPlaying();
+        super.onDestroy();
     }
 
     @Override
     public void onPrepared(MediaPlayer mediaPlayer) {
+        new java.util.Timer().schedule(new java.util.TimerTask() {
+            @Override
+            public void run() {
+                if (player != null && !player.isPlaying()) {
+                    playRingtone();
+                }
+            }
+        }, 60 * 1000);
         player.start();
     }
 
@@ -77,6 +93,7 @@ public class WakeupActivity extends Activity implements MediaPlayer.OnPreparedLi
 
     private void initializeMediaPlayer() {
         if (!isNetworkAvailable(getApplicationContext())) {
+            playRingtone();
             bufferBar.setVisibility(View.GONE);
             radioUrlTxt.setText("No network connection available.");
             return;
@@ -89,12 +106,30 @@ public class WakeupActivity extends Activity implements MediaPlayer.OnPreparedLi
         player.setAudioStreamType(AudioManager.STREAM_MUSIC);
         try {
             player.setDataSource(radioUrl);
+            startPlaying();
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (IllegalStateException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void playRingtone() {
+        if (player != null) {
+            stopPlaying();
+        }
+        if (ringtonePlayer == null) {
+            SharedPreferences settings = getApplicationContext().getSharedPreferences("Wake2RadioPrefs", Context.MODE_PRIVATE);
+            String ringtoneUri = settings.getString("ringtoneUri", null);
+
+            if (ringtoneUri != null) {
+                Uri notification = Uri.parse(ringtoneUri);
+                ringtonePlayer = MediaPlayer.create(getApplicationContext(), notification);
+                ringtonePlayer.setLooping(true);
+                ringtonePlayer.start();
+            }
         }
     }
 
@@ -109,6 +144,11 @@ public class WakeupActivity extends Activity implements MediaPlayer.OnPreparedLi
             player.stop();
             player.release();
             player = null;
+        }
+        if (ringtonePlayer != null) {
+            ringtonePlayer.stop();
+            ringtonePlayer.release();
+            ringtonePlayer = null;
         }
     }
 

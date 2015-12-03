@@ -6,7 +6,11 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.*;
 
@@ -22,8 +26,10 @@ public class MainActivity extends Activity {
     private CheckBox repeatEveryday;
     private TextView nextAlarmTxt;
     private Button alarmBtn;
+    private CheckBox ringtoneChk;
     private boolean isAlarmSet = false;
     private static final int PENDING_INTENT_ID = 17031988;
+    private static final int PICK_RINGTONE_REQUEST = 9991;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,6 +40,7 @@ public class MainActivity extends Activity {
         alarmBtn = (Button) findViewById(R.id.setAlarmBtn);
         repeatEveryday = (CheckBox) findViewById(R.id.repeatAlarmChk);
         nextAlarmTxt = (TextView) findViewById(R.id.nextAlarmTxt);
+        ringtoneChk = (CheckBox) findViewById(R.id.ringtoneChk);
         timePicker = (TimePicker) findViewById(R.id.timePicker);
         timePicker.setIs24HourView(true);
 
@@ -50,6 +57,7 @@ public class MainActivity extends Activity {
                 if (isAlarmSet) {
                     cancelAlarm(true);
                 } else {
+                    timePicker.clearFocus();
                     saveSetting("streamUrl", radioUrl.getText().toString());
                     saveSetting("alarmHour", String.valueOf(timePicker.getCurrentHour()));
                     saveSetting("alarmMinute", String.valueOf(timePicker.getCurrentMinute()));
@@ -74,6 +82,75 @@ public class MainActivity extends Activity {
                 }
             }
         });
+
+        repeatEveryday.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    nextAlarmTxt.setText("Everyday");
+                }
+                if (isAlarmSet) {
+                    cancelAlarm(false);
+                    if (isChecked) {
+                        buttonView.setChecked(true);
+                    }
+                }
+            }
+        });
+
+        ringtoneChk.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Intent pickRingtoneIntent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+                    pickRingtoneIntent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select ringtone");
+                    pickRingtoneIntent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, false);
+                    pickRingtoneIntent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
+                    pickRingtoneIntent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM);
+
+                    startActivityForResult(pickRingtoneIntent, PICK_RINGTONE_REQUEST);
+                } else {
+                    saveSetting("ringtoneUri", null);
+                }
+            }
+        });
+
+        radioUrl.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (isAlarmSet) {
+                    cancelAlarm(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        saveSetting("ringtoneChk", String.valueOf(ringtoneChk.isChecked()));
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PICK_RINGTONE_REQUEST) {
+            if (resultCode == RESULT_OK) {
+                Uri ringtoneUri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+                saveSetting("ringtoneUri", ringtoneUri.toString());
+            } else {
+                ringtoneChk.setChecked(false);
+                saveSetting("ringtoneUri", null);
+            }
+        }
     }
 
     private void cancelAlarm(boolean resetTimePicker) {
@@ -87,6 +164,7 @@ public class MainActivity extends Activity {
         alarmBtn.setText(R.string.AlarmText);
         nextAlarmTxt.setText(R.string.NoAlarm);
         repeatEveryday.setChecked(false);
+
         isAlarmSet = false;
 
         if (resetTimePicker) {
@@ -99,7 +177,7 @@ public class MainActivity extends Activity {
         saveSetting("repeatEveryday", String.valueOf(repeatEveryday.isChecked()));
         saveSetting("repeatEveryday", String.valueOf(repeatEveryday.isChecked()));
         saveSetting("isAlarmSet", String.valueOf(isAlarmSet));
-        saveSetting("nextAlarm", null);
+        saveSetting("nextAlarm", "0");
 
         Toast.makeText(MainActivity.this, "Alarm canceled", Toast.LENGTH_SHORT).show();
     }
@@ -128,11 +206,15 @@ public class MainActivity extends Activity {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE HH:mm", Locale.US);
         String alarmText = simpleDateFormat.format(nextAlarmTime);
 
-        nextAlarmTxt.setText(alarmText);
+        if (repeatEveryday.isChecked()) {
+            nextAlarmTxt.setText("Everyday");
+        } else {
+            nextAlarmTxt.setText(alarmText);
+        }
         alarmBtn.setText("Cancel Alarm");
         isAlarmSet = true;
 
-        saveSetting("nextAlarm", simpleDateFormat.format(nextAlarmTime));
+        saveSetting("nextAlarm", String.valueOf(nextAlarmTime));
         saveSetting("isAlarmSet", "true");
     }
 
@@ -159,23 +241,30 @@ public class MainActivity extends Activity {
 
     private void loadSettings() throws ParseException {
         SharedPreferences settings = getApplicationContext().getSharedPreferences("Wake2RadioPrefs", Context.MODE_PRIVATE);
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE HH:mm", Locale.US);
         Boolean repeating = Boolean.parseBoolean(settings.getString("repeatEveryday", "false"));
-        String nextAlarm = settings.getString("nextAlarm", "No Alarm set.");
+        long nextAlarm = Long.parseLong(settings.getString("nextAlarm", "0"));
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("EEE HH:mm", Locale.US);
+        String nextAlarmText = nextAlarm == 0 ? "No Alarm set." : simpleDateFormat.format(new Date(nextAlarm));
 
-        nextAlarmTxt.setText(nextAlarm);
+        nextAlarmTxt.setText(nextAlarmText);
         timePicker.setCurrentHour(Integer.parseInt(settings.getString("alarmHour", "1")));
         timePicker.setCurrentMinute(Integer.parseInt(settings.getString("alarmMinute", "1")));
         repeatEveryday.setChecked(repeating);
         radioUrl.setText(settings.getString("streamUrl", ""));
         isAlarmSet = Boolean.parseBoolean(settings.getString("isAlarmSet", "false"));
+        ringtoneChk.setChecked(Boolean.parseBoolean(settings.getString("ringtoneChk", "false")));
 
-        if (nextAlarm.length() > 0) {
-            Date nextAlarmTime = simpleDateFormat.parse(nextAlarm);
-            if (Calendar.getInstance().after(nextAlarmTime)) {
-                nextAlarmTxt.setText(R.string.NoAlarm);
+        if (nextAlarmText.length() > 0) {
+            Date nextAlarmTime = new Date(nextAlarm);
+
+            if (Calendar.getInstance().getTime().getTime() > nextAlarmTime.getTime()) {
+                cancelAlarm(true);
             } else {
-                nextAlarmTxt.setText(nextAlarm);
+                if (repeating) {
+                    nextAlarmTxt.setText("Everyday");
+                } else {
+                    nextAlarmTxt.setText(nextAlarmText);
+                }
             }
         }
     }

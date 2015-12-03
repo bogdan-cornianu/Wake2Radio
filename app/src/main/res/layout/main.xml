@@ -9,29 +9,30 @@
             android:layout_height="wrap_content"
             android:id="@+id/radioUrlTxt"
         android:singleLine="false" android:maxLines="3"
+            android:inputType="textWebEmailAddress"
             android:layout_below="@+id/radioUrlTxtView"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignRight="@+id/nextAlarmTxt"
+            android:layout_alignEnd="@+id/nextAlarmTxt" />
     <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Set Alarm"
             android:id="@+id/setAlarmBtn"
-        android:layout_marginTop="34dp"
-        android:layout_below="@+id/radioUrlTxt"
-        android:layout_centerHorizontal="true" />
+        android:layout_below="@+id/ringtoneChk"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="28dp" />
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Radio URL:"
             android:id="@+id/radioUrlTxtView"
-        android:layout_marginTop="25dp"
-        android:layout_below="@+id/nextAlarmTxt"
+        android:layout_below="@+id/textView3"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="22dp" />
     <CheckBox
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -60,6 +61,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
+        android:addStatesFromChildren="true"
         android:timePickerMode="spinner" />
 
     <TextView
@@ -68,10 +70,18 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Next Alarm: "
         android:id="@+id/textView3"
-        android:layout_above="@+id/radioUrlTxtView"
+        android:layout_alignTop="@+id/nextAlarmTxt"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_toStartOf="@+id/setAlarmBtn"
-        android:layout_toLeftOf="@+id/setAlarmBtn" />
+        android:layout_alignParentStart="true" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Play ringtone if stream is unavailable"
+        android:id="@+id/ringtoneChk"
+        android:layout_below="@+id/radioUrlTxt"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
 </RelativeLayout>
 

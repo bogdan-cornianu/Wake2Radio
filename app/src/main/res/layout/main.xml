@@ -44,14 +44,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="Next Alarm: No alarm set."
-            android:id="@+id/nextAlarmTxt"
+        android:id="@+id/nextAlarmTxt"
         android:layout_marginTop="25dp"
         android:layout_below="@+id/repeatAlarmChk"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@+id/textView3"
+        android:layout_toEndOf="@+id/textView3" />
 
     <TimePicker
             android:layout_width="wrap_content"
@@ -62,5 +61,17 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
         android:timePickerMode="spinner" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="Next Alarm: "
+        android:id="@+id/textView3"
+        android:layout_above="@+id/radioUrlTxtView"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/setAlarmBtn"
+        android:layout_toLeftOf="@+id/setAlarmBtn" />
 </RelativeLayout>
 

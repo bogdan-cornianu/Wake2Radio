@@ -7,7 +7,6 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.*;
 import android.widget.Button;
 import android.widget.ProgressBar;
@@ -24,7 +23,6 @@ public class WakeupActivity extends Activity implements MediaPlayer.OnPreparedLi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("onCreate", "Waking up...");
 
         final Window window = getWindow();
         window.addFlags(
@@ -47,7 +45,6 @@ public class WakeupActivity extends Activity implements MediaPlayer.OnPreparedLi
         radioUrl = settings.getString("streamUrl", "Stream not found.");
         radioUrlTxt = (TextView) findViewById(R.id.textView2);
 
-        Log.d("Reading stream URL", radioUrl);
         radioUrlTxt.setText(radioUrl);
 
         bufferBar = (ProgressBar) findViewById(R.id.progressBar);
@@ -63,11 +60,9 @@ public class WakeupActivity extends Activity implements MediaPlayer.OnPreparedLi
 
     @Override
     public void onBufferingUpdate(MediaPlayer mp, int percent) {
-        Log.d("onBufferingUpdate", "buffering update.");
         if (!player.isPlaying()) {
             bufferBar.setVisibility(View.VISIBLE);
             if (!isNetworkAvailable(getApplicationContext())) {
-                Log.d("OnBufferingUpdate", "Attempting to restart media stream.");
                 restartMediaStream();
             }
         } else {
@@ -77,7 +72,6 @@ public class WakeupActivity extends Activity implements MediaPlayer.OnPreparedLi
 
     @Override
     public boolean onError(MediaPlayer mediaPlayer, int what, int extra) {
-        Log.e("Media Player", String.valueOf(what));
         return false;
     }
 
@@ -85,7 +79,6 @@ public class WakeupActivity extends Activity implements MediaPlayer.OnPreparedLi
         if (!isNetworkAvailable(getApplicationContext())) {
             bufferBar.setVisibility(View.GONE);
             radioUrlTxt.setText("No network connection available.");
-            Log.d("initializeMediaPlayer", "No network connection available.");
             return;
         }
 
@@ -102,7 +95,6 @@ public class WakeupActivity extends Activity implements MediaPlayer.OnPreparedLi
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
-            Log.e("Player start", "I/O error when playing stream.");
         }
     }
 
@@ -121,7 +113,6 @@ public class WakeupActivity extends Activity implements MediaPlayer.OnPreparedLi
     }
 
     private void restartMediaStream() {
-        Log.d("restartMediaStream", "Restarting stream.");
         player.release();
         initializeMediaPlayer();
         startPlaying();

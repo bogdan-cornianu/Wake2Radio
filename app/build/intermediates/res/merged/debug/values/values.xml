@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="app_name">Wake2Radio</string>
-    <style name="LightThemeSelector" parent="android:Theme.Light"/>
-</resources>

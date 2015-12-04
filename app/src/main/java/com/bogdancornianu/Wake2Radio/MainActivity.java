@@ -55,7 +55,7 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View view) {
                 if (isAlarmSet) {
-                    cancelAlarm(true);
+                    cancelAlarm(true, true);
                 } else {
                     timePicker.clearFocus();
                     saveSetting("streamUrl", radioUrl.getText().toString());
@@ -78,7 +78,7 @@ public class MainActivity extends Activity {
             @Override
             public void onTimeChanged(TimePicker view, int hourOfDay, int minute) {
                 if (isAlarmSet) {
-                    cancelAlarm(false);
+                    cancelAlarm(false, true);
                 }
             }
         });
@@ -90,7 +90,7 @@ public class MainActivity extends Activity {
                     nextAlarmTxt.setText("Everyday");
                 }
                 if (isAlarmSet) {
-                    cancelAlarm(false);
+                    cancelAlarm(false, true);
                     if (isChecked) {
                         buttonView.setChecked(true);
                     }
@@ -124,7 +124,7 @@ public class MainActivity extends Activity {
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (isAlarmSet) {
-                    cancelAlarm(false);
+                    cancelAlarm(false, true);
                 }
             }
 
@@ -153,7 +153,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void cancelAlarm(boolean resetTimePicker) {
+    private void cancelAlarm(boolean resetTimePicker, boolean showToast) {
         Intent intent = new Intent(this, WakeupActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, PENDING_INTENT_ID, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
@@ -179,7 +179,9 @@ public class MainActivity extends Activity {
         saveSetting("isAlarmSet", String.valueOf(isAlarmSet));
         saveSetting("nextAlarm", "0");
 
-        Toast.makeText(MainActivity.this, "Alarm canceled", Toast.LENGTH_SHORT).show();
+        if (showToast) {
+            Toast.makeText(MainActivity.this, "Alarm canceled", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void setAlarm(long alarmTime, boolean repeating) {
@@ -258,7 +260,7 @@ public class MainActivity extends Activity {
             Date nextAlarmTime = new Date(nextAlarm);
 
             if (Calendar.getInstance().getTime().getTime() > nextAlarmTime.getTime()) {
-                cancelAlarm(true);
+                cancelAlarm(true, false);
             } else {
                 if (repeating) {
                     nextAlarmTxt.setText("Everyday");

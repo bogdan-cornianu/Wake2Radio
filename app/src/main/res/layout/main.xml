@@ -46,12 +46,10 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
         android:id="@+id/nextAlarmTxt"
-        android:layout_marginTop="25dp"
-        android:layout_below="@+id/repeatAlarmChk"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/textView3"
         android:layout_toRightOf="@+id/textView3"
-        android:layout_toEndOf="@+id/textView3" />
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
     <TimePicker
             android:layout_width="wrap_content"
@@ -70,7 +68,7 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Next Alarm: "
         android:id="@+id/textView3"
-        android:layout_alignTop="@+id/nextAlarmTxt"
+        android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
 

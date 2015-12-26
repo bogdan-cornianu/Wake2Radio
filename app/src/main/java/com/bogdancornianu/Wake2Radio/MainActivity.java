@@ -28,7 +28,7 @@ public class MainActivity extends Activity {
     private Button alarmBtn;
     private CheckBox ringtoneChk;
     private boolean isAlarmSet = false;
-    private static final int PENDING_INTENT_ID = 17031988;
+    public static final int PENDING_INTENT_ID = 17031988;
     private static final int PICK_RINGTONE_REQUEST = 9991;
 
     @Override
@@ -161,8 +161,8 @@ public class MainActivity extends Activity {
         pendingIntent.cancel();
         alarmManager.cancel(pendingIntent);
 
-        alarmBtn.setText(R.string.AlarmText);
-        nextAlarmTxt.setText(R.string.NoAlarm);
+        alarmBtn.setText(R.string.alarm_text);
+        nextAlarmTxt.setText(R.string.no_alarm);
         repeatEveryday.setChecked(false);
 
         isAlarmSet = false;

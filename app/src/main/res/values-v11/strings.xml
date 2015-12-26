@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="NoAlarm">No Alarm set.</string>
-    <string name="AlarmText">Set Alarm</string>
+    <string name="no_alarm">No Alarm set.</string>
+    <string name="alarm_text">Set Alarm</string>
 </resources>

@@ -27,6 +27,7 @@ public class MainActivity extends Activity {
     private TextView nextAlarmTxt;
     private Button alarmBtn;
     private CheckBox ringtoneChk;
+    private Button radioListBtn;
     private boolean isAlarmSet = false;
     public static final int PENDING_INTENT_ID = 17031988;
     private static final int PICK_RINGTONE_REQUEST = 9991;
@@ -38,6 +39,7 @@ public class MainActivity extends Activity {
 
         radioUrl = (EditText)findViewById(R.id.radioUrlTxt);
         alarmBtn = (Button) findViewById(R.id.setAlarmBtn);
+        radioListBtn = (Button) findViewById(R.id.radioListBtn);
         repeatEveryday = (CheckBox) findViewById(R.id.repeatAlarmChk);
         nextAlarmTxt = (TextView) findViewById(R.id.nextAlarmTxt);
         ringtoneChk = (CheckBox) findViewById(R.id.ringtoneChk);
@@ -133,6 +135,14 @@ public class MainActivity extends Activity {
 
             }
         });
+
+        radioListBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), RadioActivity.class);
+                startActivityForResult(intent, 1);
+            }
+        });
     }
 
     @Override
@@ -149,6 +159,10 @@ public class MainActivity extends Activity {
             } else {
                 ringtoneChk.setChecked(false);
                 saveSetting("ringtoneUri", null);
+            }
+        } else if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                radioUrl.setText(data.getStringExtra("radioUrl"));
             }
         }
     }

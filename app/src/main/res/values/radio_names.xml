@@ -1,0 +1,14 @@
+<resources>
+    <string-array name="radio_name_entries">
+        <item>Digi FM</item>
+        <item>Europa FM</item>
+        <item>Kiss FM</item>
+        <item>Magic FM</item>
+        <item>Pro FM</item>
+        <item>Radio ZU</item>
+        <item>Radio 21</item>
+        <item>Romania Actualitati</item>
+        <item>Romantic FM</item>
+        <item>TANANANA</item>
+    </string-array>
+</resources>

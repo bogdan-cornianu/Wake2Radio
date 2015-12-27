@@ -1,0 +1,14 @@
+<resources>
+    <string-array name="radio_url_entries">
+        <item>http://edge77.rdsnet.ro:84/digifm</item>
+        <item>http://astreaming.europafm.ro:8000/europafm_mp3_64k</item>
+        <item>http://80.86.106.136:8090/</item>
+        <item>http://80.86.106.35:8088/</item>
+        <item>http://stream.profm.ro:8012/profm.mp3</item>
+        <item>http://stream.radiozu.ro:8020/</item>
+        <item>http://astreaming.radio21.ro:8000/radio21_mp3_64k</item>
+        <item>http://stream2.srr.ro:8000/</item>
+        <item>http://stream.radiozu.ro:8002/</item>
+        <item>http://live.tananana.ro:8010/stream-48.aac</item>
+    </string-array>
+</resources>

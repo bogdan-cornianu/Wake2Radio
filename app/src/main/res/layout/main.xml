@@ -13,8 +13,8 @@
             android:layout_below="@+id/radioUrlTxtView"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_alignRight="@+id/nextAlarmTxt"
-            android:layout_alignEnd="@+id/nextAlarmTxt" />
+            android:layout_toLeftOf="@+id/radioListBtn"
+            android:layout_toStartOf="@+id/radioListBtn" />
     <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -80,6 +80,15 @@
         android:layout_below="@+id/radioUrlTxt"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Radio List"
+        android:id="@+id/radioListBtn"
+        android:layout_above="@+id/ringtoneChk"
+        android:layout_alignRight="@+id/nextAlarmTxt"
+        android:layout_alignEnd="@+id/nextAlarmTxt" />
 
 </RelativeLayout>
 

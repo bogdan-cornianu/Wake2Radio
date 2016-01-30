@@ -22,6 +22,7 @@ public class WakeupActivity extends Activity implements MediaPlayer.OnPreparedLi
     private ProgressBar bufferBar;
     private String radioUrl = "";
     private TextView radioUrlTxt;
+    private Float alarmVolume;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +48,9 @@ public class WakeupActivity extends Activity implements MediaPlayer.OnPreparedLi
         SharedPreferences settings = getApplicationContext().getSharedPreferences("Wake2RadioPrefs", Context.MODE_PRIVATE);
         radioUrl = settings.getString("streamUrl", "Stream not found.");
         radioUrlTxt = (TextView) findViewById(R.id.textView2);
+
+        // MediaPlayer needs a float between 0.0 and 1.0 as volume level
+        alarmVolume = Float.parseFloat(settings.getString("alarmVolume", "50")) / 100f;
 
         radioUrlTxt.setText(radioUrl);
 
@@ -104,6 +108,7 @@ public class WakeupActivity extends Activity implements MediaPlayer.OnPreparedLi
         player.setOnPreparedListener(this);
         player.setOnErrorListener(this);
         player.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        player.setVolume(alarmVolume, alarmVolume);
         try {
             player.setDataSource(radioUrl);
             startPlaying();

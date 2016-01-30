@@ -28,6 +28,8 @@ public class MainActivity extends Activity {
     private Button alarmBtn;
     private CheckBox ringtoneChk;
     private Button radioListBtn;
+    private SeekBar volumeSeek;
+    private TextView alarmVolumeText;
     private boolean isAlarmSet = false;
     public static final int PENDING_INTENT_ID = 17031988;
     private static final int PICK_RINGTONE_REQUEST = 9991;
@@ -45,6 +47,9 @@ public class MainActivity extends Activity {
         ringtoneChk = (CheckBox) findViewById(R.id.ringtoneChk);
         timePicker = (TimePicker) findViewById(R.id.timePicker);
         timePicker.setIs24HourView(true);
+        volumeSeek = (SeekBar) findViewById(R.id.volumeSeek);
+        volumeSeek.setMax(100);
+        alarmVolumeText = (TextView) findViewById(R.id.alarmVolume);
 
         try {
             loadSettings();
@@ -141,6 +146,24 @@ public class MainActivity extends Activity {
             public void onClick(View view) {
                 Intent intent = new Intent(getApplicationContext(), RadioActivity.class);
                 startActivityForResult(intent, 1);
+            }
+        });
+
+        volumeSeek.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                alarmVolumeText.setText(progress + "%");
+                saveSetting("alarmVolume", String.valueOf(progress));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
             }
         });
     }
@@ -269,6 +292,8 @@ public class MainActivity extends Activity {
         radioUrl.setText(settings.getString("streamUrl", ""));
         isAlarmSet = Boolean.parseBoolean(settings.getString("isAlarmSet", "false"));
         ringtoneChk.setChecked(Boolean.parseBoolean(settings.getString("ringtoneChk", "false")));
+        volumeSeek.setProgress(Integer.parseInt(settings.getString("alarmVolume", "50")));
+        alarmVolumeText.setText(volumeSeek.getProgress() + "%");
 
         if (nextAlarmText.length() > 0) {
             Date nextAlarmTime = new Date(nextAlarm);

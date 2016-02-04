@@ -21,7 +21,8 @@
             android:text="Set Alarm"
             android:id="@+id/setAlarmBtn"
         android:layout_below="@+id/ringtoneChk"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:background="#CC0D00" />
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

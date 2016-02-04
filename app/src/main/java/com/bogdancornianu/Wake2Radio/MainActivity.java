@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ public class MainActivity extends Activity {
     private Button alarmBtn;
     private CheckBox ringtoneChk;
     private Button radioListBtn;
+    private Color alarmBtnBackgroundColor;
     private SeekBar volumeSeek;
     private TextView alarmVolumeText;
     private boolean isAlarmSet = false;
@@ -63,6 +65,7 @@ public class MainActivity extends Activity {
             public void onClick(View view) {
                 if (isAlarmSet) {
                     cancelAlarm(true, true);
+                    alarmBtn.setBackgroundResource(android.R.drawable.btn_default);
                 } else {
                     timePicker.clearFocus();
                     saveSetting("streamUrl", radioUrl.getText().toString());
@@ -199,6 +202,7 @@ public class MainActivity extends Activity {
         alarmManager.cancel(pendingIntent);
 
         alarmBtn.setText(R.string.alarm_text);
+        alarmBtn.setBackgroundResource(android.R.drawable.btn_default);
         nextAlarmTxt.setText(R.string.no_alarm);
         repeatEveryday.setChecked(false);
 
@@ -251,6 +255,7 @@ public class MainActivity extends Activity {
             nextAlarmTxt.setText(alarmText);
         }
         alarmBtn.setText("Cancel Alarm");
+        alarmBtn.setBackgroundColor(Color.parseColor("#C20F00"));
         isAlarmSet = true;
 
         saveSetting("nextAlarm", String.valueOf(nextAlarmTime));

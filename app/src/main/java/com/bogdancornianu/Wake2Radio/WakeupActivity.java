@@ -5,24 +5,37 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.RingtoneManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.*;
+import android.util.Log;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import java.io.IOException;
+import com.google.android.exoplayer.ExoPlaybackException;
+import com.google.android.exoplayer.ExoPlayer;
+import com.google.android.exoplayer.MediaCodecAudioTrackRenderer;
+import com.google.android.exoplayer.MediaCodecSelector;
+import com.google.android.exoplayer.extractor.ExtractorSampleSource;
+import com.google.android.exoplayer.upstream.Allocator;
+import com.google.android.exoplayer.upstream.DataSource;
+import com.google.android.exoplayer.upstream.DefaultAllocator;
+import com.google.android.exoplayer.upstream.DefaultUriDataSource;
+import com.google.android.exoplayer.util.Util;
 
-public class WakeupActivity extends Activity implements MediaPlayer.OnPreparedListener, MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnErrorListener {
-    private MediaPlayer player;
+public class WakeupActivity extends Activity {
     private MediaPlayer ringtonePlayer;
     private ProgressBar bufferBar;
     private String radioUrl = "";
     private TextView radioUrlTxt;
     private Integer alarmVolume;
+    private ExoPlayer exoPlayer;
+    private static final int BUFFER_SEGMENT_SIZE = 64 * 1024;
+    private static final int BUFFER_SEGMENT_COUNT = 256;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,36 +77,6 @@ public class WakeupActivity extends Activity implements MediaPlayer.OnPreparedLi
         super.onDestroy();
     }
 
-    @Override
-    public void onPrepared(MediaPlayer mediaPlayer) {
-        new java.util.Timer().schedule(new java.util.TimerTask() {
-            @Override
-            public void run() {
-                if (player != null && !player.isPlaying()) {
-                    playRingtone();
-                }
-            }
-        }, 60 * 1000);
-        player.start();
-    }
-
-    @Override
-    public void onBufferingUpdate(MediaPlayer mp, int percent) {
-        if (!player.isPlaying()) {
-            bufferBar.setVisibility(View.VISIBLE);
-            if (!isNetworkAvailable(getApplicationContext())) {
-                restartMediaStream();
-            }
-        } else {
-            bufferBar.setVisibility(View.GONE);
-        }
-    }
-
-    @Override
-    public boolean onError(MediaPlayer mediaPlayer, int what, int extra) {
-        return false;
-    }
-
     private void initializeMediaPlayer() {
         if (!isNetworkAvailable(getApplicationContext())) {
             playRingtone();
@@ -106,25 +89,22 @@ public class WakeupActivity extends Activity implements MediaPlayer.OnPreparedLi
         int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
         audioManager.setStreamVolume(AudioManager.STREAM_ALARM, alarmVolume / maxVolume, 0);
 
-        player = new MediaPlayer();
-        player.setOnBufferingUpdateListener(this);
-        player.setOnPreparedListener(this);
-        player.setOnErrorListener(this);
-        player.setAudioStreamType(AudioManager.STREAM_ALARM);
-        try {
-            player.setDataSource(radioUrl);
-            startPlaying();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        exoPlayer = ExoPlayer.Factory.newInstance(1);
+        Uri radioUri = Uri.parse(radioUrl);
+
+        Allocator allocator = new DefaultAllocator(BUFFER_SEGMENT_SIZE);
+        String userAgent = Util.getUserAgent(getApplicationContext(), "ExoPlayerDemo");
+        DataSource dataSource = new DefaultUriDataSource(getApplicationContext(), null, userAgent);
+        ExtractorSampleSource sampleSource = new ExtractorSampleSource(
+                radioUri, dataSource, allocator, BUFFER_SEGMENT_SIZE * BUFFER_SEGMENT_COUNT);
+        MediaCodecAudioTrackRenderer audioRenderer = new MediaCodecAudioTrackRenderer(sampleSource, MediaCodecSelector.DEFAULT);
+
+        exoPlayer.prepare(audioRenderer);
+        startPlaying();
     }
 
     private void playRingtone() {
-        if (player != null) {
+        if (exoPlayer != null) {
             stopPlaying();
         }
         if (ringtonePlayer == null) {
@@ -141,16 +121,49 @@ public class WakeupActivity extends Activity implements MediaPlayer.OnPreparedLi
     }
 
     private void startPlaying() {
-        if (player != null) {
-            player.prepareAsync();
+        if (exoPlayer != null) {
+            exoPlayer.addListener(new ExoPlayer.Listener() {
+                @Override
+                public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+                    if (playbackState == ExoPlayer.STATE_READY) {
+                        bufferBar.setVisibility(View.GONE);
+                    } else if (playbackState == ExoPlayer.STATE_BUFFERING) {
+                        bufferBar.setVisibility(View.VISIBLE);
+                        if (!isNetworkAvailable(getApplicationContext())) {
+                            restartMediaStream();
+                        }
+                    }
+                }
+
+                @Override
+                public void onPlayWhenReadyCommitted() {
+
+                }
+
+                @Override
+                public void onPlayerError(ExoPlaybackException error) {
+                    Log.e("Wake2Radio-ExoPlayer", error.getMessage());
+                }
+            });
+
+            exoPlayer.setPlayWhenReady(true);
+
+            new java.util.Timer().schedule(new java.util.TimerTask() {
+                @Override
+                public void run() {
+                    if (exoPlayer != null && exoPlayer.getPlaybackState() != ExoPlayer.STATE_READY) {
+                        playRingtone();
+                    }
+                }
+            }, 60 * 1000);
         }
     }
 
     private void stopPlaying() {
-        if (player != null) {
-            player.stop();
-            player.release();
-            player = null;
+        if (exoPlayer != null) {
+            exoPlayer.stop();
+            exoPlayer.release();
+            exoPlayer = null;
         }
         if (ringtonePlayer != null) {
             ringtonePlayer.stop();
@@ -160,7 +173,7 @@ public class WakeupActivity extends Activity implements MediaPlayer.OnPreparedLi
     }
 
     private void restartMediaStream() {
-        player.release();
+        exoPlayer.release();
         initializeMediaPlayer();
         startPlaying();
     }

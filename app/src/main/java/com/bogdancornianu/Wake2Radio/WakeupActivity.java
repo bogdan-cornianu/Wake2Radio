@@ -85,10 +85,6 @@ public class WakeupActivity extends Activity {
             return;
         }
 
-        AudioManager audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
-        int maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_ALARM);
-        audioManager.setStreamVolume(AudioManager.STREAM_ALARM, alarmVolume / maxVolume, 0);
-
         exoPlayer = ExoPlayer.Factory.newInstance(1);
         Uri radioUri = Uri.parse(radioUrl);
 
@@ -99,8 +95,17 @@ public class WakeupActivity extends Activity {
                 radioUri, dataSource, allocator, BUFFER_SEGMENT_SIZE * BUFFER_SEGMENT_COUNT);
         MediaCodecAudioTrackRenderer audioRenderer = new MediaCodecAudioTrackRenderer(sampleSource, MediaCodecSelector.DEFAULT);
 
+        final AudioManager audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
+        final int maxMusicVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxMusicVolume, 0);
+        setPlaybackVolume(audioRenderer, (float) alarmVolume / 100);
+
         exoPlayer.prepare(audioRenderer);
         startPlaying();
+    }
+
+    private void setPlaybackVolume(MediaCodecAudioTrackRenderer audioRenderer, float level) {
+        exoPlayer.sendMessage(audioRenderer, MediaCodecAudioTrackRenderer.MSG_SET_VOLUME, level);
     }
 
     private void playRingtone() {
@@ -114,6 +119,7 @@ public class WakeupActivity extends Activity {
             if (ringtoneUri != null) {
                 Uri notification = Uri.parse(ringtoneUri);
                 ringtonePlayer = MediaPlayer.create(getApplicationContext(), notification);
+                ringtonePlayer.setVolume(100f, 100f);
                 ringtonePlayer.setLooping(true);
                 ringtonePlayer.start();
             }

@@ -15,14 +15,18 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.*;
 
+import com.bogdancornianu.Wake2Radio.database.Database;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 public class MainActivity extends Activity {
     private TimePicker timePicker;
+    private Alarm defaultAlarm;
     private EditText radioUrl;
     private CheckBox repeatEveryday;
     private TextView nextAlarmTxt;
@@ -40,6 +44,13 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        Database.init(getApplicationContext());
+        try {
+            setDefaultAlarm(Database.getAll().get(0));
+        } catch (Exception e) {
+            setDefaultAlarm(new Alarm());
+        }
 
         radioUrl = (EditText)findViewById(R.id.radioUrlTxt);
         alarmBtn = (Button) findViewById(R.id.setAlarmBtn);
@@ -69,6 +80,7 @@ public class MainActivity extends Activity {
                 } else {
                     timePicker.clearFocus();
                     saveSetting("streamUrl", radioUrl.getText().toString());
+                    defaultAlarm.setRadioUrl(radioUrl.getText().toString());
                     saveSetting("alarmHour", String.valueOf(timePicker.getCurrentHour()));
                     saveSetting("alarmMinute", String.valueOf(timePicker.getCurrentMinute()));
                     saveSetting("repeatEveryday", String.valueOf(repeatEveryday.isChecked()));
@@ -171,6 +183,44 @@ public class MainActivity extends Activity {
         });
     }
 
+//    private void setDefaultTestData() {
+//        defaultAlarm.setEnableRingtone(false);
+//        defaultAlarm.setAlarmVolume(50);
+//        defaultAlarm.setRingtoneUrl("");
+//        defaultAlarm.setRadioUrl("");
+//        defaultAlarm.setAlarmName("DefaultAlarm");
+//        defaultAlarm.setAlarmActive(true);
+//
+//        Calendar newAlarmTime = Calendar.getInstance();
+//        newAlarmTime.set(Calendar.HOUR_OF_DAY, timePicker.getCurrentHour());
+//        newAlarmTime.set(Calendar.MINUTE, timePicker.getCurrentMinute());
+//        newAlarmTime.set(Calendar.SECOND, 0);
+//        defaultAlarm.setAlarmTime(newAlarmTime);
+//
+//        defaultAlarm.addDay(Alarm.Day.values()[0]);
+//    }
+
+    private Alarm getDefaultAlarm() {
+        return defaultAlarm;
+    }
+
+    public void setDefaultAlarm(Alarm alarm) {
+        this.defaultAlarm = alarm;
+    }
+
+    private void saveAlarm() {
+        if (getDefaultAlarm().getId() < 1) {
+            Database.create(getDefaultAlarm());
+        } else {
+            Database.update(getDefaultAlarm());
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putSerializable("alarm", getDefaultAlarm());
+    };
+
     @Override
     public void onPause() {
         super.onPause();
@@ -243,6 +293,7 @@ public class MainActivity extends Activity {
 
         setNextAlarm(alarmTime);
         Toast.makeText(MainActivity.this, "Alarm set", Toast.LENGTH_SHORT).show();
+        saveAlarm();
     }
 
     private void setNextAlarm(long nextAlarmTime) {
@@ -294,7 +345,8 @@ public class MainActivity extends Activity {
         timePicker.setCurrentHour(Integer.parseInt(settings.getString("alarmHour", "1")));
         timePicker.setCurrentMinute(Integer.parseInt(settings.getString("alarmMinute", "1")));
         repeatEveryday.setChecked(repeating);
-        radioUrl.setText(settings.getString("streamUrl", ""));
+//        radioUrl.setText(settings.getString("streamUrl", ""));
+        radioUrl.setText(defaultAlarm.getRadioUrl());
         isAlarmSet = Boolean.parseBoolean(settings.getString("isAlarmSet", "false"));
         ringtoneChk.setChecked(Boolean.parseBoolean(settings.getString("ringtoneChk", "false")));
         volumeSeek.setProgress(Integer.parseInt(settings.getString("alarmVolume", "50")));

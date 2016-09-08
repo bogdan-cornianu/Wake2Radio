@@ -79,11 +79,11 @@ public class MainActivity extends Activity {
                     alarmBtn.setBackgroundResource(android.R.drawable.btn_default);
                 } else {
                     timePicker.clearFocus();
-                    saveSetting("streamUrl", radioUrl.getText().toString());
                     defaultAlarm.setRadioUrl(radioUrl.getText().toString());
-                    saveSetting("alarmHour", String.valueOf(timePicker.getCurrentHour()));
-                    saveSetting("alarmMinute", String.valueOf(timePicker.getCurrentMinute()));
-                    saveSetting("repeatEveryday", String.valueOf(repeatEveryday.isChecked()));
+                    defaultAlarm.setAlarmTime(getCalendarFromTimePicker(timePicker));
+//                    saveSetting("alarmHour", String.valueOf(timePicker.getCurrentHour()));
+//                    saveSetting("alarmMinute", String.valueOf(timePicker.getCurrentMinute()));
+//                    saveSetting("repeatEveryday", String.valueOf(repeatEveryday.isChecked()));
 
                     Calendar calendar = getCalendarFromTimePicker(timePicker);
 
@@ -132,7 +132,8 @@ public class MainActivity extends Activity {
 
                     startActivityForResult(pickRingtoneIntent, PICK_RINGTONE_REQUEST);
                 } else {
-                    saveSetting("ringtoneUri", null);
+//                    saveSetting("ringtoneUri", null);
+                    defaultAlarm.setRingtoneUrl(null);
                 }
             }
         });
@@ -168,7 +169,8 @@ public class MainActivity extends Activity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 alarmVolumeText.setText(progress + "%");
-                saveSetting("alarmVolume", String.valueOf(progress));
+//                saveSetting("alarmVolume", String.valueOf(progress));
+                defaultAlarm.setAlarmVolume(progress);
             }
 
             @Override
@@ -224,17 +226,21 @@ public class MainActivity extends Activity {
     @Override
     public void onPause() {
         super.onPause();
-        saveSetting("ringtoneChk", String.valueOf(ringtoneChk.isChecked()));
+//        saveSetting("ringtoneChk", String.valueOf(ringtoneChk.isChecked()));
+        defaultAlarm.setEnableRingtone(ringtoneChk.isChecked());
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == PICK_RINGTONE_REQUEST) {
             if (resultCode == RESULT_OK) {
                 Uri ringtoneUri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
-                saveSetting("ringtoneUri", ringtoneUri.toString());
+//                saveSetting("ringtoneUri", ringtoneUri.toString());
+                defaultAlarm.setRingtoneUrl(ringtoneUri.toString());
             } else {
                 ringtoneChk.setChecked(false);
-                saveSetting("ringtoneUri", null);
+//                saveSetting("ringtoneUri", null);
+                defaultAlarm.setRingtoneUrl(null);
+                defaultAlarm.setEnableRingtone(false);
             }
         } else if (requestCode == 1) {
             if (resultCode == RESULT_OK) {
@@ -263,11 +269,13 @@ public class MainActivity extends Activity {
             timePicker.setCurrentMinute(0);
         }
 
-        saveSetting("alarmHour", String.valueOf(timePicker.getCurrentHour()));
-        saveSetting("alarmMinute", String.valueOf(timePicker.getCurrentMinute()));
-        saveSetting("repeatEveryday", String.valueOf(repeatEveryday.isChecked()));
-        saveSetting("repeatEveryday", String.valueOf(repeatEveryday.isChecked()));
-        saveSetting("isAlarmSet", String.valueOf(isAlarmSet));
+//        saveSetting("alarmHour", String.valueOf(timePicker.getCurrentHour()));
+//        saveSetting("alarmMinute", String.valueOf(timePicker.getCurrentMinute()));
+//        saveSetting("repeatEveryday", String.valueOf(repeatEveryday.isChecked()));
+//        saveSetting("repeatEveryday", String.valueOf(repeatEveryday.isChecked()));
+//        saveSetting("isAlarmSet", String.valueOf(isAlarmSet));
+        defaultAlarm.setAlarmActive(isAlarmSet);
+        defaultAlarm.setAlarmTime(getCalendarFromTimePicker(timePicker));
         saveSetting("nextAlarm", "0");
 
         if (showToast) {
@@ -310,7 +318,8 @@ public class MainActivity extends Activity {
         isAlarmSet = true;
 
         saveSetting("nextAlarm", String.valueOf(nextAlarmTime));
-        saveSetting("isAlarmSet", "true");
+        defaultAlarm.setAlarmActive(isAlarmSet);
+//        saveSetting("isAlarmSet", "true");
     }
 
     private void saveSetting(String key, String value) {
@@ -342,12 +351,15 @@ public class MainActivity extends Activity {
         String nextAlarmText = nextAlarm == 0 ? "No Alarm set." : simpleDateFormat.format(new Date(nextAlarm));
 
         nextAlarmTxt.setText(nextAlarmText);
-        timePicker.setCurrentHour(Integer.parseInt(settings.getString("alarmHour", "1")));
-        timePicker.setCurrentMinute(Integer.parseInt(settings.getString("alarmMinute", "1")));
+//        timePicker.setCurrentHour(Integer.parseInt(settings.getString("alarmHour", "1")));
+//        timePicker.setCurrentMinute(Integer.parseInt(settings.getString("alarmMinute", "1")));
         repeatEveryday.setChecked(repeating);
 //        radioUrl.setText(settings.getString("streamUrl", ""));
         radioUrl.setText(defaultAlarm.getRadioUrl());
-        isAlarmSet = Boolean.parseBoolean(settings.getString("isAlarmSet", "false"));
+        timePicker.setCurrentHour(defaultAlarm.getAlarmTime().getTime().getHours());
+        timePicker.setCurrentMinute(defaultAlarm.getAlarmTime().getTime().getMinutes());
+//        isAlarmSet = Boolean.parseBoolean(settings.getString("isAlarmSet", "false"));
+        isAlarmSet = defaultAlarm.getAlarmActive();
         ringtoneChk.setChecked(Boolean.parseBoolean(settings.getString("ringtoneChk", "false")));
         volumeSeek.setProgress(Integer.parseInt(settings.getString("alarmVolume", "50")));
         alarmVolumeText.setText(volumeSeek.getProgress() + "%");

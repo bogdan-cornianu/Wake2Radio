@@ -105,7 +105,7 @@ public class WakeupActivity extends Activity {
     }
 
     private void setPlaybackVolume(MediaCodecAudioTrackRenderer audioRenderer, float level) {
-        exoPlayer.sendMessage(audioRenderer, MediaCodecAudioTrackRenderer.MSG_SET_VOLUME, level);
+        exoPlayer.sendMessage(audioRenderer, MediaCodecAudioTrackRenderer.MSG_SET_VOLUME, 0.1f);
     }
 
     private void playRingtone() {

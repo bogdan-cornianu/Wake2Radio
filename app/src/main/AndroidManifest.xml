@@ -1,51 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.bogdancornianu.Wake2Radio"
-          android:versionCode="7"
-          android:versionName="1.2">
-    <uses-sdk
-            android:minSdkVersion="16"
-            android:targetSdkVersion="23"
-    />
+    package="com.bogdancornianu.Wake2Radio"
+    android:versionCode="7"
+    android:versionName="1.2">
 
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <application
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name">
-        <activity android:name=".MainActivity"
-                  android:screenOrientation="portrait"
-                  android:label="@string/app_name">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
+        android:label="@string/app_name"
+        android:theme="@style/Theme.Wake2RadioTheme">
         <activity
-                android:name=".WakeupActivity"
-                android:screenOrientation="portrait"
-                android:label="Wakeup" >
-        </activity>
+            android:name=".AlarmDetailActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".WakeupActivity"
+            android:label="Wakeup"
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".RadioActivity"
-            android:screenOrientation="portrait"
-            android:label="Radio List" >
-        </activity>
+            android:label="Radio List"
+            android:screenOrientation="portrait"></activity>
+
         <service
-            android:process="com.bogdancornianu.Wake2Radio.serviceProcess"
-            android:name="com.bogdancornianu.Wake2Radio.Service.AlarmService"
+            android:name=".service.AlarmService"
             android:icon="@mipmap/ic_launcher"
             android:label="@string/app_name"
-            >
-        </service>
-        <receiver android:name="com.bogdancornianu.Wake2Radio.Service.AlarmServiceBroadcastReceiver" >
+            android:process="com.bogdancornianu.Wake2Radio.serviceProcess"></service>
+
+        <receiver android:name=".service.AlarmServiceBroadcastReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main"
+            android:theme="@style/Theme.Wake2RadioTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
-</manifest> 
+
+</manifest>

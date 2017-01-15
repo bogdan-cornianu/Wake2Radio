@@ -1,4 +1,4 @@
-package com.bogdancornianu.Wake2Radio.Service;
+package com.bogdancornianu.Wake2Radio.service;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -9,7 +9,7 @@ import android.content.SharedPreferences;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.bogdancornianu.Wake2Radio.MainActivity;
+import com.bogdancornianu.Wake2Radio.AlarmDetailActivity;
 import com.bogdancornianu.Wake2Radio.WakeupActivity;
 
 import java.util.Calendar;
@@ -31,7 +31,7 @@ public class AlarmService extends Service {
 
         if (nextAlarmTime > timeNow) {
             Intent wakeupIntent = new Intent(this, WakeupActivity.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, MainActivity.PENDING_INTENT_ID, wakeupIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, AlarmDetailActivity.PENDING_INTENT_ID, wakeupIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
             if (repeating) {

@@ -1,0 +1,11 @@
+<resources>
+
+    <style name="Theme.Wake2RadioTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.Wake2RadioTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.Wake2RadioTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+</resources>

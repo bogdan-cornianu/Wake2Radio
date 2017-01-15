@@ -5,7 +5,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 
-import com.bogdancornianu.Wake2Radio.Service.AlarmServiceBroadcastReceiver;
+import com.bogdancornianu.Wake2Radio.service.AlarmServiceBroadcastReceiver;
 
 import java.io.Serializable;
 import java.util.Arrays;

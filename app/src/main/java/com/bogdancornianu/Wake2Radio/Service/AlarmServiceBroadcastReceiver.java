@@ -1,4 +1,4 @@
-package com.bogdancornianu.Wake2Radio.Service;
+package com.bogdancornianu.Wake2Radio.service;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
